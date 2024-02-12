@@ -1,0 +1,38 @@
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
+# Replace 'YOUR_BOT_TOKEN' with your actual token
+TOKEN = '6482344117:AAFaqKq8pOujt0SCwPDzzvaeNzIswRsbLeg'
+
+# Custom message from you
+custom_message = ''
+
+def start(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('Hello! I am your Valentine\'s Day bot. Send me a message, and I will respond with love.')
+
+def set_message(update: Update, context: CallbackContext) -> None:
+    global custom_message
+    custom_message = ' '.join(context.args)
+    update.message.reply_text(f'Got it! Your custom message is now set to:\n\n{custom_message}')
+
+def echo(update: Update, context: CallbackContext) -> None:
+    global custom_message
+    message = update.message.text
+    response = f'{custom_message}\n\nYou said: {message}'
+    update.message.reply_text(response)
+
+def main() -> None:
+    updater = Updater(TOKEN)
+
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("setmessage", set_message, pass_args=True))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+
+    updater.start_polling()
+
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
